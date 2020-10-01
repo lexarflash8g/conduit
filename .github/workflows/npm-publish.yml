@@ -10,9 +10,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: echo "Great Job, Its Building"
+      - run: 
+        pwd
+        ls -la
+        cd conduit/backend
+        npm install
+        npm test
+    deploy:
+      needs: [test]
+      runs-on: ubuntu-latest
+      steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          
